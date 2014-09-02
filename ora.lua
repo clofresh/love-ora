@@ -64,7 +64,7 @@ local function processPaths(ora, node, filepath)
             end
             rowNum = rowNum + 1
         end
-        if vertices[1] == vertices[#vertices-1] and vertices[2] == vertices[#vertices] then
+        if #vertices > 2 and vertices[1] == vertices[#vertices-1] and vertices[2] == vertices[#vertices] then
             table.remove(vertices)
             table.remove(vertices)
         end
