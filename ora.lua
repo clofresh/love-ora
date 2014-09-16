@@ -43,7 +43,7 @@ local function processPaths(ora, node, filepath)
         local name, vertices
         vertices = {}
         local rowNum = 1
-        for row in contents:gmatch('[^\n]+') do
+        for row in contents:gmatch('[^\r\n]+') do
             local x, y
             local colNum = 1
             for col in row:gmatch('[^,]+') do
