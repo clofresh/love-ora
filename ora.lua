@@ -100,6 +100,9 @@ function module.load(filepath)
         h = tonumber(root.xarg.h),
         layers = nil,
         paths = nil,
+        reset = function()
+            return module.load(filepath)
+        end
     }
 
     -- Parse the child nodes
