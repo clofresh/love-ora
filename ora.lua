@@ -4,19 +4,21 @@ local module = {}
 
 local function processAttrs(node)
     local attrs = {}
-    for key, valStr in pairs(node.xarg) do
-        local num = tonumber(valStr)
-        if num then
-            attrs[key] = num
-        else
-            local vals = {}
-            for val in valStr:gmatch('[^,]+') do
-                table.insert(vals, tonumber(val) or val)
-            end
-            if #vals == 1 then
-                attrs[key] = vals[1]
+    for key, valStr in pairs(node) do
+        if key ~= 'xml' then
+            local num = tonumber(valStr)
+            if num then
+                attrs[key] = num
             else
-                attrs[key] = vals
+                local vals = {}
+                for val in valStr:gmatch('[^,]+') do
+                    table.insert(vals, tonumber(val) or val)
+                end
+                if #vals == 1 then
+                    attrs[key] = vals[1]
+                else
+                    attrs[key] = vals
+                end
             end
         end
     end
@@ -80,24 +82,18 @@ function module.load(filepath)
     -- Read the metadata file as xml
     local stackPath = filepath .. '/stack.xml'
     local contents, size = love.filesystem.read(stackPath)
-    local data = Xml.string_to_table(contents)
+    local data = Xml.load(contents)
 
     -- Find the root node
-    local root
-    for i, node in ipairs(data) do
-        if node.label == 'image' then
-            root = node
-            break
-        end
-    end
-    assert(root, 'No root <image> tag found in ' .. stackPath)
+    local root = data
+    assert(root.xml == 'image', 'No root <image> tag found in ' .. stackPath)
 
     -- Instantiate the object
     local self = {
         x = 0,
         y = 0,
-        w = tonumber(root.xarg.w),
-        h = tonumber(root.xarg.h),
+        w = tonumber(root.w),
+        h = tonumber(root.h),
         layers = nil,
         paths = nil,
         reset = function()
@@ -111,7 +107,7 @@ function module.load(filepath)
         paths = processPaths,
     }
     for i, node in ipairs(root) do
-        local processor = processors[node.label]
+        local processor = processors[node.xml]
         if processor then
             processor(self, node, filepath)
         end

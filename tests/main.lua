@@ -1,5 +1,3 @@
-package.path = package.path .. ";../?.lua"
-
 local Ora = require('ora')
 
 function assertEquals(actual, expected, msg)
